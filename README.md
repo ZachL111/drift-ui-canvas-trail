@@ -1,68 +1,40 @@
 # drift-ui-canvas-trail
 
-`drift-ui-canvas-trail` is a focused Lua codebase around develop a Lua command-oriented project for canvas scenarios with framed sample traffic, bounds and ordering tests, and no credentials or hosted services. It is meant to be easy to inspect, run, and extend without a hosted service.
+`drift-ui-canvas-trail` is a compact Lua repository for frontend apps, centered on this goal: Develop a Lua command-oriented project for canvas scenarios with framed sample traffic, bounds and ordering tests, and no credentials or hosted services.
 
-## Drift UI Canvas Trail Walkthrough
+## Use Case
 
-I would read the project from the outside in: command, fixture, model, then roadmap. That keeps the frontend apps idea grounded in files that can be checked locally.
+The point is to make a small domain rule concrete enough that a reader can change it and immediately see what broke.
 
-## Reason For The Project
+## Drift UI Canvas Trail Review Notes
 
-This is not a wrapper around a service. It is a self-contained project that shows how the model behaves when demand, capacity, latency, risk, and weight move in different directions.
+The first comparison I would make is `view drift` against `state pressure` because it shows where the rule is most opinionated.
 
-## Data Notes
+## Highlights
 
-The examples are meant to be readable before they are exhaustive. They cover enough variation to show how latency and risk can pull a decision below the threshold.
+- `fixtures/domain_review.csv` adds cases for view drift and state pressure.
+- `metadata/domain-review.json` records the same cases in structured form.
+- `config/review-profile.json` captures the read order and the two review questions.
+- `examples/drift-ui-canvas-walkthrough.md` walks through the case spread.
+- The Lua code includes a review path for `view drift` and `state pressure`.
+- `docs/field-notes.md` explains the strongest and weakest cases.
 
-## How It Is Put Together
+## Code Layout
 
-The core is a scoring model over demand, capacity, latency, risk, and weight. That keeps view models, interaction state, and layout checks in one explicit decision path. The threshold is 168, with risk penalty 5, latency penalty 2, and weight bonus 5. The Lua project keeps the module shape simple and validates behavior through a direct script.
+The repository has two validation layers: the original compact policy fixture and the domain review fixture. They are separate so one can change without hiding failures in the other.
 
-## Capabilities
+The Lua implementation avoids hidden state so fixture changes are easy to reason about.
 
-- Models view models with deterministic scoring and explicit review decisions.
-- Uses fixture data to keep interaction state changes visible in code review.
-- Includes extended examples for layout checks, including `surge` and `degraded`.
-- Documents fixture data tradeoffs in `docs/operations.md`.
-- Runs locally with a single verification command and no external credentials.
-
-## Command Examples
+## Run The Check
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1
 ```
 
-This runs the language-level build or test path against the compact fixture set.
+## Regression Path
 
-## Check The Work
+The same command runs the local verification path. The highest-scoring domain case is `baseline` at 226, which lands in `ship`. The most cautious case is `stress` at 137, which lands in `watch`.
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/audit.ps1
-```
+## Future Work
 
-The audit command checks repository structure and README constraints before it delegates to the verifier.
-
-## Where Things Live
-
-- `src`: primary implementation
-- `tests`: verification harness
-- `fixtures`: compact golden scenarios
-- `examples`: expanded scenario set
-- `metadata`: project constants and verification metadata
-- `docs`: operations and extension notes
-- `scripts`: local verification and audit commands
-
-## Possible Extensions
-
-- Add malformed input fixtures so the failure path is as visible as the happy path.
-- Split the scoring constants into a typed configuration object and validate it before use.
-- Add a comparison mode that shows how decisions change when one signal is adjusted.
-- Add one more frontend apps fixture that focuses on a malformed or borderline input.
-
-## Tradeoffs
-
-This code is local-first. It makes no claim about deployed usage and avoids credentials, hosted state, and environment-specific setup.
-
-## Getting It Running
-
-Use a normal shell with Lua available on `PATH`. The verifier is written as a PowerShell script because the portfolio was assembled on Windows.
+No external service is required. A deeper version would add more negative cases and a clearer boundary around invalid input.
